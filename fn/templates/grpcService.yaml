@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.grpc.name }}-deployment
+  namespace: default
+  labels:
+    app: {{ .Values.grpc.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.grpc.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.grpc.name }}
+    spec:
+      containers:
+      - name: {{ .Values.grpc.name }}
+        image: "{{ .Values.grpc.image.name }}:{{ .Values.grpc.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.grpc.internalPort }}
+        env:
+        - name: TF_SERVING_HOST
+          value: {{ .Values.tfServing.name }}-service
+        - name: TF_SERVING_PORT
+          value: {{ .Values.tfServing.externalPort | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.grpc.name }}-service
+spec:
+  selector:
+    app: {{ .Values.grpc.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.grpc.externalPort }}
+      targetPort: {{ .Values.grpc.internalPort }}

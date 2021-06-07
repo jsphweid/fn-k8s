@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.tfServing.name }}-deployment
+  namespace: default
+  labels:
+    app: {{ .Values.tfServing.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.tfServing.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.tfServing.name }}
+    spec:
+      containers:
+      - args:
+        - --port={{ .Values.tfServing.internalPort }}
+        - --rest_api_port=8501
+        - --model_config_file=/models/models.config
+        - --gpus all
+        command:
+        - /usr/bin/tensorflow_model_server
+        name: {{ .Values.tfServing.name }}
+        image: "{{ .Values.tfServing.image.name }}:{{ .Values.tfServing.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.tfServing.internalPort }}
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.tfServing.name }}-service
+spec:
+  selector:
+    app: {{ .Values.tfServing.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.tfServing.externalPort }}
+      targetPort: {{ .Values.tfServing.internalPort }}
+      

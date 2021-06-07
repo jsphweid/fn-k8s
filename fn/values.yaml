@@ -1,0 +1,24 @@
+tfServing:
+  name: fn-serving
+  internalPort: 8500
+  externalPort: 8500
+  image: 
+    name: jsphweid/fn_serving_base_gpu
+    tag: latest
+
+grpc:
+  name: fn-python-grpc
+  internalPort: 50051
+  externalPort: 5000
+  image: 
+    name: jsphweid/fn_py_grpc
+    tag: latest
+
+gql:
+  name: fn-gql
+  internalPort: 4000
+  externalPort: 8080
+  image: 
+    name: jsphweid/fn_gql
+    tag: latest
+

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.gql.name }}-deployment
+  namespace: default
+  labels:
+    app: {{ .Values.gql.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.gql.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.gql.name }}
+    spec:
+      containers:
+      - name: {{ .Values.gql.name }}
+        image: "{{ .Values.gql.image.name }}:{{ .Values.gql.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.gql.internalPort }}
+        env:
+        - name: GRPC_HOST
+          value: {{ .Values.grpc.name }}-service
+        - name: GRPC_PORT
+          value: {{ .Values.grpc.externalPort | quote }}
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: fn-secrets
+              key: aws_access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fn-secrets
+              key: aws_secret_access_key
+        - name: AWS_BUCKET_REGION
+          valueFrom:
+            secretKeyRef:
+              name: fn-secrets
+              key: aws_bucket_region
+        - name: OBJECTS_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: fn-secrets
+              key: objects_bucket_name
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.gql.name }}-service
+spec:
+  selector:
+    app: {{ .Values.gql.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.gql.externalPort }}
+      targetPort: {{ .Values.gql.internalPort }}
