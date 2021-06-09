@@ -1,7 +1,10 @@
 # Cluster setup
 
-1. install docker
-2. I used a pretty basic https://k3d.io/ setup.
+- install docker
+- install minikube
+- minikube addons enable ingress
+- deploy helm stuff
+- `sudo minikube start --driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost`
 
 NOTE: since the models are private, being logged into dockerhub is necessary
 
