@@ -36,8 +36,17 @@ setting up https://docs.nvidia.com/datacenter/cloud-native/kubernetes/dcgme2e.ht
 ### cert manager
 
 - `sudo kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.3.1/cert-manager.yaml`
-- `sudo kubectl create ns ingress-nginx`
-- `sudo kubectl -n ingress-nginx apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.2/deploy/static/provider/cloud/deploy.yaml`
+
+### maybe better....? does it create namespace?
+```
+kubectl create ns ingress-nginx
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install ingress-nginx --namespace ingress-nginx ingress-nginx/ingress-nginx
+```
+
+The thing about this is is that I haven't figured out how to append to the existing ConfigMap (where you can change Too Many Requests to 429 for instance). In the nginx controller pod, you can see the arguments (`--configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+`), but if you name a configmap that, helm can't deploy because it already exists (although this seems what stackoverflow suggests to do...). For now I'm just going to manually edit it.
 
 
 
