@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ephfin-api-secret
+  namespace: default
+spec:
+  dnsNames:
+    - api.ephfin.com
+  secretName: tls-secret
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer

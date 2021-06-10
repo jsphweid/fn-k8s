@@ -5,8 +5,13 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
 spec:
+  tls:
+  - hosts:
+    - api.ephfin.com
+    secretName: tls-secret
   rules:
-  - http:
+  - host: api.ephfin.com
+    http:
       paths:
       - path: /graphql
         pathType: Prefix
