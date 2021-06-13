@@ -25,6 +25,10 @@ spec:
           value: {{ .Values.tfServing.name }}-service
         - name: TF_SERVING_PORT
           value: {{ .Values.tfServing.externalPort | quote }}
+        - name: TS_SERVING_HOST
+          value: {{ .Values.torchServe.name }}-service
+        - name: TS_SERVING_PORT
+          value: {{ .Values.torchServe.grpcInferencePort | quote }}
 ---
 apiVersion: v1
 kind: Service

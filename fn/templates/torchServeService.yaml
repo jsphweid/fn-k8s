@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.torchServe.name }}-deployment
+  namespace: default
+  labels:
+    app: {{ .Values.torchServe.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.torchServe.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.torchServe.name }}
+    spec:
+      containers:
+      - args: ["torchserve", "--start",  "--model-store", "/home/model-server/model-store/", "--ts-config", "/home/model-server/config.properties"]
+        name: {{ .Values.torchServe.name }}
+        image: "{{ .Values.torchServe.image.name }}:{{ .Values.torchServe.image.tag }}"
+        ports:
+          - containerPort: {{ .Values.torchServe.inferencePort }}
+          - containerPort: {{ .Values.torchServe.grpcInferencePort }}
+          - containerPort: {{ .Values.torchServe.managementPort }}
+          - containerPort: {{ .Values.torchServe.metricsPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.torchServe.name }}-service
+spec:
+  selector:
+    app: {{ .Values.torchServe.name }}
+  ports:
+  - name: preds
+    port: {{ .Values.torchServe.inferencePort }}
+    targetPort: {{ .Values.torchServe.inferencePort }}
+  - name: preds-grpc
+    port: {{ .Values.torchServe.grpcInferencePort }}
+    targetPort: {{ .Values.torchServe.grpcInferencePort }}
+  - name: mdl
+    port: {{ .Values.torchServe.managementPort }}
+    targetPort: {{ .Values.torchServe.managementPort }}
+  - name: metrics
+    port: {{ .Values.torchServe.metricsPort }}
+    targetPort: {{ .Values.torchServe.metricsPort }}
+      
