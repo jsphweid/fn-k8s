@@ -6,6 +6,16 @@ tfServing:
     name: jsphweid/fn_serving_base_gpu
     tag: latest
 
+torchServe:
+  name: fn-serving-torchserve
+  inferencePort: 8080
+  managementPort: 8081
+  metricsPort: 8082
+  grpcInferencePort: 7070
+  image: 
+    name: jsphweid/fn_torchserve_gpu
+    tag: latest
+
 grpc:
   name: fn-python-grpc
   internalPort: 50051
